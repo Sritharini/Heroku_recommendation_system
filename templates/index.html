@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Recommender</title>
+</head>
+<body>
+    <h1>🛍️ AI-Powered Product Recommender</h1>
+    <form method="POST">
+        <label for="user_id">Enter User ID:</label>
+        <input type="text" id="user_id" name="user_id" required>
+        <input type="submit" value="Get Recommendations">
+    </form>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+{% if recommendations is not none %}
+        <h2>Top 5 Recommendations:</h2>
+        <table border="1">
+            <tr>
+                <th>Product</th>
+                <th>Score</th>
+                <th>Sentiment</th>
+                <th>Hybrid Score</th>
+            </tr>
+            {% for item in recommendations %}
+            <tr>
+                <td>{{ item.product }}</td>
+                <td>{{ '%.2f'|format(item.score) }}</td>
+                <td>{{ '%.2f'|format(item.positive_score) }}</td>
+                <td>{{ '%.2f'|format(item.hybrid_score) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
