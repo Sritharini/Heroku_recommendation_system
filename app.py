@@ -11,8 +11,8 @@ def index():
 
     if request.method == 'POST':
         try:
-            user_id = int(request.form['user_id'])
-            recommendations = recommend_products(user_id)
+            reviews_username = int(request.form['reviews_username'])
+            recommendations = recommend_products(reviews_username)
             if not recommendations:
                 error = "No recommendations found or user not found."
         except Exception as e:

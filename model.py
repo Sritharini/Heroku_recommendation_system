@@ -11,12 +11,12 @@ review_df = pd.read_csv("data/review_df.csv")
 def clean_text(text):
     return text.lower()
 
-def recommend_products(user_id, top_n=20, final_n=5):
+def recommend_products(reviews_username, top_n=20, final_n=5):
     user_item_matrix = pd.pivot_table(review_df, index='user_id', columns='name', values='reviews_rating')
-    if user_id not in user_item_matrix.index:
+    if reviews_username not in user_item_matrix.index:
         return []
 
-    user_ratings = user_item_matrix.loc[user_id].dropna()
+    user_ratings = user_item_matrix.loc[reviews_username].dropna()
     scores = pd.Series(dtype=float)
 
     for item, rating in user_ratings.items():
