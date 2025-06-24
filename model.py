@@ -12,11 +12,18 @@ def clean_text(text):
     return text.lower()
 
 def recommend_products(reviews_username, top_n=20, final_n=5):
-    user_item_matrix = pd.pivot_table(review_df, index='user_id', columns='name', values='reviews_rating')
+    # Create user-item matrix with reviews_username as index
+    user_item_matrix = pd.pivot_table(review_df, index='reviews_username', columns='name', values='reviews_rating')
+
     if reviews_username not in user_item_matrix.index:
+        print(f"❌ Username '{reviews_username}' not found in review_df.")
         return []
 
     user_ratings = user_item_matrix.loc[reviews_username].dropna()
+    if user_ratings.empty:
+        print(f"❌ No ratings available for user '{reviews_username}'.")
+        return []
+
     scores = pd.Series(dtype=float)
 
     for item, rating in user_ratings.items():
@@ -25,6 +32,10 @@ def recommend_products(reviews_username, top_n=20, final_n=5):
             scores = scores.add(similar_items * rating, fill_value=0)
 
     scores = scores.drop(user_ratings.index, errors='ignore')
+    if scores.empty:
+        print("❌ No similar items found.")
+        return []
+
     top_20 = scores.sort_values(ascending=False).head(top_n).reset_index()
     top_20.columns = ['product', 'score']
 
@@ -34,6 +45,7 @@ def recommend_products(reviews_username, top_n=20, final_n=5):
     try:
         X = tf_idf_vectorizer.transform(filtered_reviews['cleaned_text'])
     except ValueError:
+        print("❌ TF-IDF vectorizer mismatch.")
         return []
 
     filtered_reviews['positive_score'] = sentiment_model.predict_proba(X)[:, 1]
